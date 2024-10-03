@@ -9,6 +9,7 @@ namespace BallBlast.Cameras
     [RequireComponent(typeof(Camera))]
     public class ViewPortHandler : MonoBehaviour
     {
+        public static ViewPortHandler Instance { get; private set; }
         public enum Constraint { Landscape, Portrait }
 
         [SerializeField]
@@ -49,6 +50,7 @@ namespace BallBlast.Cameras
 
         private void Awake()
         {
+            Instance = this;
             camera = GetComponent<Camera>();
             ComputeResolution();
         }

@@ -21,12 +21,12 @@ namespace BallBlast.Managers
         public void InitializeAfter()
         {
             EventManager.Instance.OnGameStarted += OnGameStarted;
+            Initialize();
         }
 
         public void InitializeSelf()
         {
             Instance = this;
-            Initialize();
         }
 
         private void Initialize()
@@ -37,6 +37,8 @@ namespace BallBlast.Managers
 
         private void OnGameStarted()
         {
+            _hero.gameObject.SetActive(false);
+            _hero.Reset();
             _hero.gameObject.SetActive(true);
         }
 

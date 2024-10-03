@@ -17,9 +17,13 @@ namespace BallBlast.Managers
         private AudioClip shot;
         [SerializeField]
         private AudioClip hit;
+        [SerializeField]
+        private float minClipDelay = 0.1f;
 
         private bool _playShot;
         private bool _playHit;
+        private float _shotTime;
+        private float _hitTime;
 
         public void InitializeAfter()
         {
@@ -47,17 +51,18 @@ namespace BallBlast.Managers
 
         private void Update()
         {
-            TryPlayClip(ref _playShot, shot);
-            TryPlayClip(ref _playHit, hit);
+            TryPlayClip(ref _playShot, ref _shotTime, shot);
+            TryPlayClip(ref _playHit, ref _hitTime, hit);
         }
 
-        private void TryPlayClip(ref bool needPlay, AudioClip clip)
+        private void TryPlayClip(ref bool needPlay, ref float time, AudioClip clip)
         {
-            if (!needPlay)
+            if (!needPlay || time > Time.time)
                 return;
 
             audioSource.PlayOneShot(clip);
             needPlay = false;
+            time = Time.time + minClipDelay;
         }
     }
 }
