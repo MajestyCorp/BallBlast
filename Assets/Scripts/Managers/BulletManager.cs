@@ -18,6 +18,8 @@ namespace BallBlast.Managers
         private Material bulletMaterial;
         [SerializeField]
         private float bulletSpeed = 1f;
+        [SerializeField]
+        private LayerMask hitLayer;
 
         private Mesh _bulletMesh;
         private List<List<BulletData>> _bulletPacks = new();
@@ -93,19 +95,30 @@ namespace BallBlast.Managers
         private void ProcessPack(List<BulletData> pack)
         {
             _matrices.Clear();
+            var raycastDistance = Time.deltaTime * BulletSpeed;
+            RaycastHit2D rayHit;
 
             for (var i=0;i<pack.Count;i++)
             {
                 var data = pack[i];
                 var passedTime = Time.time - data.SpawnTime;
                 var dist = passedTime * BulletSpeed;
+                var pos = data.Position + Vector3.up * dist;
 
-                if(dist > _maxScreenHeight)
+                if (dist > _maxScreenHeight)
                 {
                     pack[i] = data.Die();
+                } else
+                {
+                    rayHit = Physics2D.Raycast(pos, Vector2.up, raycastDistance, hitLayer);
+                    if(rayHit.collider != null && rayHit.collider.TryGetComponent(out Block block))
+                    {
+                        block.DoHit();
+                        pack[i] = data.Explode();
+                        SoundManager.Instance.Hit();
+                    }
                 }
 
-                var pos = data.Position + Vector3.up * dist;
                 _matrices.Add(Matrix4x4.TRS(pos, Quaternion.identity, Vector3.one));
             }
 

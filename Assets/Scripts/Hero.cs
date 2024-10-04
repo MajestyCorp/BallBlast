@@ -47,6 +47,12 @@ namespace BallBlast
             InvalidateBarrels();
         }
 
+        public void AddBarrel()
+        {
+            _barrels++;
+            InvalidateBarrels();
+        }
+
         private void InvalidateBarrels()
         {
             SyncAmount();

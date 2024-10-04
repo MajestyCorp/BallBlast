@@ -10,7 +10,14 @@ namespace BallBlast
 
         
         [SerializeField, Header("Bullet Settings")]
-        private float shotDelay = 0.1f;
+        private float initialShotDelay = 0.1f;
+
+        private float _shotDelay;
+
+        internal void ApplyFirerate(float multiplier)
+        {
+            _shotDelay /= multiplier;
+        }
 
         private List<Transform> _barrels = new();
         private float _lastShotTime;
@@ -33,6 +40,7 @@ namespace BallBlast
 
         private void OnGameStarted()
         {
+            _shotDelay = initialShotDelay;
             _lastShotTime = Time.time;
         }
 
@@ -48,10 +56,13 @@ namespace BallBlast
 
         private void Update()
         {
-            while (_lastShotTime + shotDelay <= Time.time)
+            if (Time.timeScale < 0.5f)
+                return;
+
+            while (_lastShotTime + _shotDelay <= Time.time)
             {
-                DoShoot(_lastShotTime + shotDelay);
-                _lastShotTime += shotDelay;
+                DoShoot(_lastShotTime + _shotDelay);
+                _lastShotTime += _shotDelay;
             }
         }
 
