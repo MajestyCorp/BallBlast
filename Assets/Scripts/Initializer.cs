@@ -8,6 +8,9 @@ namespace BallBlast
     {
         private void Awake()
         {
+            #if UNITY_ANDROID 
+            Application.targetFrameRate = 60;
+            #endif
             var array = GetComponentsInChildren<IInitializer>();
 
             if(array != null)
