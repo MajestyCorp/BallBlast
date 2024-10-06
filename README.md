@@ -10,3 +10,58 @@ Even with 7-10 thousand bullets, the game plays at 60 fps on low devices.<br>
 All code is available for public use.
 
 ![2](https://github.com/user-attachments/assets/14f9464a-1f0f-4d86-a4f9-bca71bd247b1)
+
+Sample code for handling bullets. There is a list of packs, each pack has up to 1023 bullets. Such implementation is related to the limitation of `Graphics.DrawMeshInstanced` to process up to 1023 objects at once.
+```cs
+        private void ProcessBullets()
+        {
+            _currentBulletAmount = 0;
+
+            for (var i = 0; i < _bulletPacks.Count; i++)
+            {
+                var pack = _bulletPacks[i];
+                _currentBulletAmount += pack.Count;
+                ProcessPack(pack);
+            }
+        }
+
+        private void ProcessPack(List<BulletData> pack)
+        {
+            _matrices.Clear();
+            var raycastDistance = Time.deltaTime * BulletSpeed;
+            RaycastHit2D rayHit;
+
+            for (var i=0;i<pack.Count;i++)
+            {
+                var data = pack[i];
+                var passedTime = Time.time - data.SpawnTime;
+                var dist = passedTime * BulletSpeed;
+                var pos = data.Position + Vector3.up * dist;
+
+                if (dist > _maxScreenHeight)
+                {
+                    pack[i] = data.Die();
+                } else
+                {
+                    rayHit = Physics2D.Raycast(pos, Vector2.up, raycastDistance, hitLayer);
+                    if(rayHit.collider != null && rayHit.collider.TryGetComponent(out Block block))
+                    {
+                        block.DoHit();
+                        pack[i] = data.Explode();
+                        SoundManager.Instance.Hit();
+                    }
+                }
+
+                _matrices.Add(Matrix4x4.TRS(pos, Quaternion.identity, Vector3.one));
+            }
+
+            Graphics.DrawMeshInstanced(_bulletMesh, 0, bulletMaterial, _matrices);
+
+            for (var i = pack.Count - 1; i >= 0; i--)
+            {
+                var data = pack[i];
+                if (data.Died)
+                    pack.RemoveAt(i);
+            }
+        }
+```
