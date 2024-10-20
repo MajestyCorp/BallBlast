@@ -11,12 +11,14 @@ namespace BallBlast
         
         [SerializeField, Header("Bullet Settings")]
         private float initialShotDelay = 0.1f;
+        [SerializeField]
+        private float minShotDelay = 0.005f;
 
         private float _shotDelay;
 
         internal void ApplyFirerate(float multiplier)
         {
-            _shotDelay /= multiplier;
+            _shotDelay = Mathf.Max(minShotDelay, _shotDelay / multiplier);
         }
 
         private List<Transform> _barrels = new();
