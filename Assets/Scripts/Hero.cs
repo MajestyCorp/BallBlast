@@ -11,6 +11,8 @@ namespace BallBlast
         [SerializeField, Min(1)]
         private int initialBarrels = 1;
         [SerializeField]
+        private int maxBarrels = 18;
+        [SerializeField]
         private float width = 0.22f;
         [SerializeField]
         private float colliderXPadding;
@@ -49,7 +51,7 @@ namespace BallBlast
 
         public void AddBarrel()
         {
-            _barrels++;
+            _barrels = Mathf.Min(_barrels + 1, maxBarrels);
             InvalidateBarrels();
         }
 

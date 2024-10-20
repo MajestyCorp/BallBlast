@@ -16,14 +16,18 @@ namespace BallBlast
         private PowerUp powerUpPrefab;
 
         private int _points;
+        private BlockManager _manager;
 
-        public void Init(Vector3 position, int points)
+        public void Init(BlockManager manager, Vector3 position, int points)
         {
+            _manager = manager; 
             transform.localScale = Vector3.one;
             _points = points;
             transform.localPosition = position;
             text.gameObject.SetActive(true);
             InvalidateText();
+
+            transform.DOKill();
 
             gameObject.SetActive(true);
         }
@@ -40,10 +44,15 @@ namespace BallBlast
 
         private void Die()
         {
+            _manager.KillBlock();
+
             if (powerUpPrefab != null)
                 SpawnPowerUp();
 
-            transform.DOScale(Vector3.zero, 0.2f).SetEase(Ease.InOutSine).OnComplete(() => OnDieComplete());
+            transform.DOScale(Vector3.zero, 0.2f)
+                .SetEase(Ease.InOutSine)
+                .OnComplete(() => OnDieComplete())
+                .SetTarget(transform);
         }
 
         private void OnDieComplete()

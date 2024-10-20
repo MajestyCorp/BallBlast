@@ -22,16 +22,10 @@ namespace BallBlast.Managers
         [SerializeField]
         private LayerMask hitLayer;
 
-        [SerializeField, Header("Bullet Counter")]
-        private TextMeshProUGUI textCounter;
-
         private Mesh _bulletMesh;
         private List<List<BulletData>> _bulletPacks = new();
         private List<Matrix4x4> _matrices = new();
         private float _maxScreenHeight;
-
-        private int _lastBulletAmount;
-        private int _currentBulletAmount;
 
         private struct BulletData
         {
@@ -86,21 +80,6 @@ namespace BallBlast.Managers
             EventManager.Instance.OnGameStarted += OnGameStarted;
         }
 
-        private void OnEnable()
-        {
-            StartCoroutine(CounterUpdater());
-        }
-
-        private IEnumerator CounterUpdater()
-        {
-            var ret = new WaitForSeconds(1f);
-            while (true)
-            {
-                TryInvalidateCounter();
-                yield return ret;
-            }
-        }
-
         private void Update()
         {
             if (Time.timeScale < 0.5f)
@@ -109,23 +88,11 @@ namespace BallBlast.Managers
             ProcessBullets();
         }
 
-        private void TryInvalidateCounter()
-        {
-            if (_lastBulletAmount == _currentBulletAmount)
-                return;
-
-            textCounter.text = _currentBulletAmount.ToString();
-            _lastBulletAmount = _currentBulletAmount;
-        }
-
         private void ProcessBullets()
         {
-            _currentBulletAmount = 0;
-
             for (var i = 0; i < _bulletPacks.Count; i++)
             {
                 var pack = _bulletPacks[i];
-                _currentBulletAmount += pack.Count;
                 ProcessPack(pack);
             }
         }
@@ -172,10 +139,7 @@ namespace BallBlast.Managers
 
         private void OnGameStarted()
         {
-            _currentBulletAmount = 0;
             BulletSpeed = bulletSpeed;
-
-            TryInvalidateCounter();
 
             for (var i=0;i<_bulletPacks.Count;i++)
             {

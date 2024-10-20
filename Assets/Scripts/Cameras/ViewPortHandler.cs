@@ -13,6 +13,8 @@ namespace BallBlast.Cameras
         public enum Constraint { Landscape, Portrait }
 
         [SerializeField]
+        private float heightOffset;
+        [SerializeField]
         private Color wireColor = Color.white;
         [SerializeField]
         private float unitsSize = 1;
@@ -51,6 +53,7 @@ namespace BallBlast.Cameras
         private void Awake()
         {
             Instance = this;
+            transform.localPosition = Vector3.zero;
             camera = GetComponent<Camera>();
             ComputeResolution();
         }
@@ -72,8 +75,9 @@ namespace BallBlast.Cameras
             _width = _height * camera.aspect;
 
             float cameraX, cameraY;
-            cameraX = camera.transform.position.x;
-            cameraY = camera.transform.position.y;
+            cameraX = 0f;
+            cameraY = _height / 2 + heightOffset;
+            transform.localPosition = new Vector3(cameraX, cameraY, -10f);
 
             leftX = cameraX - _width / 2;
             rightX = cameraX + _width / 2;

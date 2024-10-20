@@ -16,12 +16,17 @@ namespace BallBlast
             public int spawnChance = 10;
         }
 
+        [SerializeField]
+        private int liveBlocks = 0;
+
         [SerializeField, Header("Column Settings")]
         private int columns = 5;
         [SerializeField]
         private float columnWidth = 0.8f;
         [SerializeField]
         private float columnHeight = 0.4f;
+        [SerializeField]
+        private int rowsOffset = 0;
         [SerializeField, Header("Speed Settings")]
         private float columnSpeed = 1f;
         [SerializeField]
@@ -58,13 +63,13 @@ namespace BallBlast
         private void Awake()
         {
             EventManager.Instance.OnGameStarted += OnGameStarted;
-            EventManager.Instance.OnGameFailed += OnGameFailed;
+            EventManager.Instance.OnGameEnded += OnGameEnded;
             Initialize();
         }
 
         private void Initialize()
         {
-            _maxSpawnHeight = ViewPortHandler.Instance.Height * 0.5f + columnHeight;
+            _maxSpawnHeight = ViewPortHandler.Instance.Height * 0.5f + columnHeight - rowsOffset * columnHeight;
             _columnOffsetX = - columns / 2 * columnWidth;
 
             InitializePrefabs();
@@ -84,6 +89,17 @@ namespace BallBlast
             }
 
             _prefabs.Shuffle();
+        }
+
+        public void KillBlock()
+        {
+            liveBlocks--;
+
+            if (liveBlocks <= 0)
+            {
+                Reset();
+                EventManager.Instance.GameVictory();
+            }
         }
 
         private void Update()
@@ -125,7 +141,9 @@ namespace BallBlast
                 var prefab = _prefabs.Random();
                 var pool = _prefabToPool[prefab];
                 var block = pool.Take<Block>();
-                block.Init(position, points);
+                block.Init(this, position, points);
+
+                liveBlocks++;
             }
         }
 
@@ -158,17 +176,20 @@ namespace BallBlast
 
                 child.gameObject.Release();
             }
+
+            liveBlocks = 0;
         }
 
-        private void OnGameFailed()
+        private void OnGameEnded(bool victory)
         {
+            _gameStarted = false;
             StopAllCoroutines();
         }
 
         private void OnDestroy()
         {
             EventManager.Instance.OnGameStarted -= OnGameStarted;
-            EventManager.Instance.OnGameFailed -= OnGameFailed;
+            EventManager.Instance.OnGameEnded -= OnGameEnded;
         }
     }
 }

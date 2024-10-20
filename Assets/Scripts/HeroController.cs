@@ -5,19 +5,21 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.EventSystems;
 
 namespace BallBlast
 {
     public class HeroController : MonoBehaviour
     {
         [SerializeField]
-        private float halfWidth = 1.5f;
+        private float halfWidth = 2.5f;
         [SerializeField]
-        private float steeringSpeed = 1f;
+        private float lerpSpeed = 30f;
 
-        private Transform _heroTransform;
         private Hero _hero;
-        private Vector3 _lastMousePos;
+        private Vector3 _desiredPosition;
+        private Transform _playerTransform;
+        private bool _handling;
 
         private void Awake()
         {
@@ -29,41 +31,51 @@ namespace BallBlast
         private void Initialize()
         {
             _hero = HeroManager.Instance.Hero;
-            _heroTransform = _hero.transform;
-
-            _heroTransform.localPosition = Vector3.zero;
+            _playerTransform = _hero.transform;
+            _desiredPosition = Vector3.zero;
+            _handling = false;
         }
 
         private void OnGameStarted()
         {
-            _heroTransform.localPosition = Vector3.zero;
+            _desiredPosition = Vector3.zero;
         }
 
         private void Update()
         {
-            if(Input.GetMouseButtonDown(0))
+            if (Input.GetMouseButtonDown(0) && !EventSystem.current.IsPointerOverGameObject())
             {
-                _lastMousePos = Input.mousePosition;
+                _handling = true;
             }
 
-            if(Input.GetMouseButton(0))
+            if (_handling && Input.GetMouseButton(0))
             {
-                var delta = Input.mousePosition - _lastMousePos;
-                _lastMousePos = Input.mousePosition;
-
-                var newPosX = _heroTransform.localPosition.x + delta.x * Time.deltaTime * steeringSpeed / Screen.width;
-                newPosX = Mathf.Clamp(newPosX, -halfWidth + _hero.HalfColliderWidth, halfWidth - _hero.HalfColliderWidth);
-
-                _heroTransform.localPosition = Vector2.right * newPosX;
+                InvalidateDesiredPosition(Input.mousePosition);
             }
-            /*
-            if(Input.touchCount > 0)
+
+            if (Input.GetMouseButtonUp(0))
             {
-                var touch = Input.GetTouch(0);
-                var newXPos = _heroTransform.localPosition.x + touch.deltaPosition.x * Time.deltaTime * steeringSpeed / Screen.width;
-                newXPos = Mathf.Clamp(newXPos, -halfWidth, halfWidth);
-                _heroTransform.localPosition = Vector2.right * newXPos;
-            }*/
+                _handling = false;
+            }
+
+            LerpPlayerPosition();
+        }
+
+        private void LerpPlayerPosition()
+        {
+            _playerTransform.localPosition = Vector3.Lerp(_playerTransform.localPosition, _desiredPosition, lerpSpeed * Time.deltaTime);
+        }
+
+        private void InvalidateDesiredPosition(Vector3 mousePosition)
+        {
+            var width = ViewPortHandler.Instance.Width;
+            var relativeX = Mathf.Clamp01(mousePosition.x / Screen.width) - 0.5f;
+            var offset = _hero.HalfColliderWidth;
+            var leftOffset = Mathf.Min(-halfWidth + offset, 0f);
+            var rightOffset = Mathf.Max(halfWidth - offset, 0f);
+            var gameX = Mathf.Clamp(relativeX * width, leftOffset, rightOffset);
+
+            _desiredPosition = new Vector3(gameX, 0f, 0f);
         }
 
         private void OnDestroy()

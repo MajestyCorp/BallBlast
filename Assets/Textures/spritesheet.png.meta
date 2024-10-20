@@ -279,10 +279,10 @@ TextureImporter:
       name: bullet
       rect:
         serializedVersion: 2
-        x: 86
-        y: 22
+        x: 119
+        y: 87
         width: 6
-        height: 13
+        height: 12
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -300,12 +300,12 @@ TextureImporter:
       name: bullet_2
       rect:
         serializedVersion: 2
-        x: 93
-        y: 18
+        x: 117
+        y: 110
         width: 10
         height: 17
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -313,6 +313,27 @@ TextureImporter:
       bones: []
       spriteID: 2e2b09eb653785b48a8293db04f1b5ef
       internalID: -879170620
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: plane
+      rect:
+        serializedVersion: 2
+        x: 97
+        y: 1
+        width: 30
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6dd3e2950dde8804694cb0e63d15d351
+      internalID: -1698236813
       vertices: []
       indices: 
       edges: []
@@ -335,6 +356,7 @@ TextureImporter:
       bullet: -1008512556
       bullet_2: -879170620
       button: 215524899
+      plane: -1698236813
       reward_0: -710383675
       reward_1: 1588374749
   spritePackingTag: 

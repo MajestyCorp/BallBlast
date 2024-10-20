@@ -8,9 +8,15 @@ namespace BallBlast
     {
         private void Awake()
         {
-            #if UNITY_ANDROID 
+#if UNITY_WEBGL && !UNITY_EDITOR
+            CustomPlayerPrefs.Initialize(new WebGLPlayerPrefs());
+#else
+            CustomPlayerPrefs.Initialize(new DefaultPlayerPrefs());
+#endif
+
+#if UNITY_ANDROID
             Application.targetFrameRate = 60;
-            #endif
+#endif
             var array = GetComponentsInChildren<IInitializer>();
 
             if(array != null)

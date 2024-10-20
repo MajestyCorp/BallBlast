@@ -1,3 +1,4 @@
+using BallBlast.UI;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -8,9 +9,13 @@ namespace BallBlast.Managers
     public class UIManager : MonoBehaviour
     {
         [SerializeField]
-        private GameObject menuUI;
+        private Frame menuUI;
         [SerializeField]
-        private GameObject gameUI;
+        private Frame victoryUI;
+        [SerializeField]
+        private Frame failedUI;
+        [SerializeField]
+        private Frame gameUI;
         [SerializeField, Header("Buttons")]
         private GameObject buttonStart;
         [SerializeField]
@@ -19,56 +24,71 @@ namespace BallBlast.Managers
         private GameObject buttonRestart;
 
         private bool _gameStarted = false;
-        private bool _gameFailed = false;
+        private bool _gameEnded = false;
 
         private void Awake()
         {
-            EventManager.Instance.OnGameFailed += OnGameFailed;
-
-            ShowMenu(true);
+            EventManager.Instance.OnGameInitialized += OnGameInitialized;
+            EventManager.Instance.OnGameStarted += OnGameStarted;
+            EventManager.Instance.OnGamePaused += OnGamePaused;
+            EventManager.Instance.OnGameEnded += OnGameEnded;
         }
 
-        private void OnGameFailed()
+        private void OnGameInitialized(bool firstTime)
         {
-            _gameFailed = true;
-            ShowMenu(true);
+            _gameStarted = false;
+            _gameEnded = false;
+            ShowMenu(menuUI);
         }
 
-        private void ShowMenu(bool value)
+        private void OnGameStarted()
         {
-            Time.timeScale = value ? 0f : 1f;
-            menuUI.SetActive(value);
-            gameUI.SetActive(!value);
+            _gameStarted = true;
+            _gameEnded = false;
+            ShowMenu(gameUI);
+        }
 
-            if(value)
+        private void OnGamePaused(bool paused)
+        {
+            ShowMenu(paused ? menuUI : gameUI);
+        }
+
+        private void OnGameEnded(bool victory)
+        {
+            _gameEnded = true;
+            ShowMenu(victory ? victoryUI : failedUI);
+        }
+
+        private void ShowMenu(Frame menu)
+        {
+            gameUI.Toggle(menu == gameUI);
+            menuUI.Toggle(menu == menuUI);
+            victoryUI.Toggle(menu == victoryUI);
+            failedUI.Toggle(menu == failedUI);
+
+            if(menuUI.IsVisible)
             {
-                buttonStart.SetActive(!_gameStarted);
-                buttonResume.SetActive(_gameStarted && !_gameFailed);
-                buttonRestart.SetActive(_gameStarted);
+                buttonResume.SetActive(_gameStarted && !_gameEnded);
+                buttonRestart.SetActive(_gameStarted || _gameEnded);
+                buttonStart.SetActive(!_gameStarted && !_gameEnded);
             }
         }
 
         public void ButtonStart()
         {
             SoundManager.Instance.ButtonClick();
-            _gameStarted = true;
-            _gameFailed = false;
-            ShowMenu(false);
             EventManager.Instance.GameStarted();
         }
 
         public void ButtonResume()
         {
             SoundManager.Instance.ButtonClick();
-            ShowMenu(false);
+            EventManager.Instance.GamePaused(false);
         }
 
         public void ButtonRestart()
         {
             SoundManager.Instance.ButtonClick();
-
-            _gameFailed = false;
-            ShowMenu(false);
             EventManager.Instance.GameStarted();
         }
 
@@ -78,16 +98,27 @@ namespace BallBlast.Managers
             Application.Quit();
         }
 
-        public void ButtonMenu()
+        public void ButtonPause()
         {
             SoundManager.Instance.ButtonClick();
-            ShowMenu(true);
+            EventManager.Instance.GamePaused(true);
+        }
+
+        public void ButtonGoToMenu()
+        {
+            SoundManager.Instance.ButtonClick();
+            EventManager.Instance.GameInitialized();
         }
 
         private void OnDestroy()
         {
             if (EventManager.Instance != null)
-                EventManager.Instance.OnGameFailed -= OnGameFailed;
+            {
+                EventManager.Instance.OnGameInitialized -= OnGameInitialized;
+                EventManager.Instance.OnGameStarted -= OnGameStarted;
+                EventManager.Instance.OnGamePaused -= OnGamePaused;
+                EventManager.Instance.OnGameEnded -= OnGameEnded;
+            }
         }
     }
 }

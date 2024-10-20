@@ -14,9 +14,11 @@ namespace BallBlast.Managers
         [SerializeField, Header("Clips")]
         private AudioClip buttonClick;
         [SerializeField]
-        private AudioClip shot;
+        private List<AudioClip> shots;
         [SerializeField]
-        private AudioClip hit;
+        private List<AudioClip> hits;
+        [SerializeField]
+        private AudioClip pickUp;
         [SerializeField]
         private float minClipDelay = 0.1f;
 
@@ -39,6 +41,16 @@ namespace BallBlast.Managers
             audioSource.PlayOneShot(buttonClick);
         }
 
+        public void Play2D(AudioClip clip)
+        {
+            audioSource.PlayOneShot(clip);
+        }
+
+        public void PickUp()
+        {
+            audioSource.PlayOneShot(pickUp);
+        }
+
         public void Shot()
         {
             _playShot = true;
@@ -51,8 +63,8 @@ namespace BallBlast.Managers
 
         private void Update()
         {
-            TryPlayClip(ref _playShot, ref _shotTime, shot);
-            TryPlayClip(ref _playHit, ref _hitTime, hit);
+            TryPlayClip(ref _playShot, ref _shotTime, shots.Random());
+            TryPlayClip(ref _playHit, ref _hitTime, hits.Random());
         }
 
         private void TryPlayClip(ref bool needPlay, ref float time, AudioClip clip)
