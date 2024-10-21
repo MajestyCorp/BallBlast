@@ -10,11 +10,14 @@ namespace BallBlast
 {
     public class Block : MonoBehaviour
     {
+        private const float KillAnimationTime = 0.2f;
+
         [SerializeField]
         private TextMeshPro text;
         [SerializeField]
         private PowerUp powerUpPrefab;
 
+        private bool _killed;
         private int _points;
         private BlockManager _manager;
 
@@ -23,6 +26,7 @@ namespace BallBlast
             _manager = manager; 
             transform.localScale = Vector3.one;
             _points = points;
+            _killed = false;
             transform.localPosition = position;
             text.gameObject.SetActive(true);
             InvalidateText();
@@ -42,20 +46,26 @@ namespace BallBlast
 
         private void Die()
         {
-            
+            _manager.KillBlock();
 
             if (powerUpPrefab != null)
                 SpawnPowerUp();
 
-            transform.DOScale(Vector3.zero, 0.2f)
+            transform.DOScale(Vector3.zero, KillAnimationTime)
                 .SetEase(Ease.InOutSine)
-                .OnComplete(() => OnDieComplete());
+                .OnComplete(() => OnDieComplete())
+                .SetTarget(transform);
         }
 
         private void OnDieComplete()
         {
-            _manager.KillBlock();
             gameObject.Release();
+        }
+
+        private void OnDisable()
+        {
+            if (_points <= 0)
+                transform.DOKill();
         }
 
         private void SpawnPowerUp()
