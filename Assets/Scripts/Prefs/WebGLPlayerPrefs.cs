@@ -10,8 +10,8 @@ namespace BallBlast
     public class WebGLPlayerPrefs : ICustomPlayerPrefs
     {
         private Dictionary<string, ValueData> _data = new();
-        private string _path = "idbfs/SpaceTurretRunner/data";
-        private string _folder = "idbfs/SpaceTurretRunner/";
+        private string _path = "idbfs/BlockBlast/data";
+        private string _folder = "idbfs/BlockBlast/";
 
         public WebGLPlayerPrefs()
         {

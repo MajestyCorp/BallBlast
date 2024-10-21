@@ -78,6 +78,12 @@ namespace BallBlast.Managers
             _bulletMesh = SpriteToMesh(bulletSprite);
 
             EventManager.Instance.OnGameStarted += OnGameStarted;
+            /*
+            for(var i=0;i<18;i++)
+            {
+                var pack = new List<BulletData>(MaxBulletsInPack);
+                _bulletPacks.Add(pack);
+            }*/
         }
 
         private void Update()
