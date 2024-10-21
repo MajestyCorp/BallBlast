@@ -171,7 +171,7 @@ namespace BallBlast.Managers
                 }
             }
 
-            var newPack = new List<BulletData>();
+            var newPack = new List<BulletData>(MaxBulletsInPack);
             CreateBulletsInPack(newPack, positions);
             _bulletPacks.Add(newPack);
         }
