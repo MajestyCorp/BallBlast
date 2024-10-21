@@ -506,7 +506,7 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  lifetime: 2
+  lifetime: 1
   model: {fileID: 3777844644694923264}
   firerateMultiplier: 1.2
 --- !u!58 &6192905990127686928

@@ -95,10 +95,10 @@ namespace BallBlast
         {
             liveBlocks--;
 
-            if (liveBlocks <= 0)
+            if (_gameStarted && liveBlocks <= 0)
             {
-                Reset();
                 EventManager.Instance.GameVictory();
+                Reset();
             }
         }
 
@@ -155,8 +155,8 @@ namespace BallBlast
 
         private void OnGameStarted()
         {
-            _gameStarted = true;
             Reset();
+            _gameStarted = true;
         }
 
         private void Reset()

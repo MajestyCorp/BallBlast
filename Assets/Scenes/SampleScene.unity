@@ -11501,7 +11501,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   initialShotDelay: 0.1
-  minShotDelay: 0.005
+  minShotDelay: 0.001
 --- !u!1 &2096905311
 GameObject:
   m_ObjectHideFlags: 0

@@ -335,7 +335,7 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  lifetime: 2
+  lifetime: 1
   model: {fileID: 7635422956426518259}
 --- !u!58 &5923417606080805104
 CircleCollider2D:

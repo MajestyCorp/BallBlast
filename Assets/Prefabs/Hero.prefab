@@ -175,6 +175,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   initialBarrels: 1
+  maxBarrels: 18
   width: 0.22
   colliderXPadding: 0
   planeLeft: {fileID: 8565829007999312051}

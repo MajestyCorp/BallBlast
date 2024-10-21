@@ -27,8 +27,6 @@ namespace BallBlast
             text.gameObject.SetActive(true);
             InvalidateText();
 
-            transform.DOKill();
-
             gameObject.SetActive(true);
         }
 
@@ -44,19 +42,19 @@ namespace BallBlast
 
         private void Die()
         {
-            _manager.KillBlock();
+            
 
             if (powerUpPrefab != null)
                 SpawnPowerUp();
 
             transform.DOScale(Vector3.zero, 0.2f)
                 .SetEase(Ease.InOutSine)
-                .OnComplete(() => OnDieComplete())
-                .SetTarget(transform);
+                .OnComplete(() => OnDieComplete());
         }
 
         private void OnDieComplete()
         {
+            _manager.KillBlock();
             gameObject.Release();
         }
 
